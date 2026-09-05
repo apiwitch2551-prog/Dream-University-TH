@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผลลัพธ์การแนะนำมหาวิทยาลัย - UniDream</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+        body { background-color: #030712; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 700; color: #ffffff; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+        .nav-brand i { color: #38bdf8; animation: neonPulse 2s infinite alternate; }
+        .nav-links { display: flex; gap: 30px; list-style: none; align-items: center; }
+        .nav-links a { text-decoration: none; color: #94a3b8; font-weight: 500; font-size: 0.95rem; transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #38bdf8; text-shadow: 0 0 8px rgba(56, 189, 248, 0.6); }
+
+        .google-user-pill {
+            display: inline-flex;
+            align-items: center;
+            background: #0f172a;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 50px;
+            padding: 4px 14px 4px 4px;
+            gap: 10px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+        }
+        .user-avatar-circle {
+            width: 32px; height: 32px; background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+            color: #ffffff; font-weight: 700; font-size: 0.95rem; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+        }
+        .user-info-text { display: flex; flex-direction: column; }
+        .user-fullname { color: #ffffff; font-size: 0.8rem; font-weight: 600; line-height: 1.2; }
+        .user-email-sub { color: #94a3b8; font-size: 0.65rem; line-height: 1.2; }
+        .btn-logout {
+            width: 26px; height: 26px; background: rgba(244, 63, 94, 0.2); color: #fb7185;
+            border: none; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: 0.3s; margin-left: 2px; font-size: 0.75rem;
+        }
+        .btn-logout:hover { background: #f43f5e; color: #ffffff; box-shadow: 0 0 10px #f43f5e; }
+
+        @keyframes neonPulse {
+            0% { text-shadow: 0 0 5px #38bdf8, 0 0 10px #38bdf8; }
+            100% { text-shadow: 0 0 15px #38bdf8, 0 0 25px #38bdf8; }
+        }
+
+        .hero-section {
+            background: radial-gradient(circle at center, #1e1b4b 0%, #030712 100%);
+            color: #ffffff;
+            padding: 60px 20px 40px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .badge-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+        }
+        .hero-section h1 { 
+            font-size: 2.4rem; 
+            font-weight: 800; 
+            margin-bottom: 10px; 
+            color: #f8fafc;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+        }
+        .hero-section p { font-size: 1rem; color: #94a3b8; max-width: 700px; margin: 0 auto; }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            flex: 1;
+            width: 100%;
+        }
+
+        .result-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .result-card:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.25);
+        }
+
+        .uni-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .uni-icon {
+            width: 50px; height: 50px;
+            background: rgba(56, 189, 248, 0.05); 
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+        }
+        .uni-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .uni-title h3 { font-size: 1.2rem; font-weight: 700; color: #f8fafc; margin-bottom: 2px; }
+        .uni-title p { font-size: 0.85rem; color: #94a3b8; }
+
+        .faculty-box {
+            background: rgba(15, 23, 42, 0.6);
+            border-left: 3px solid #38bdf8;
+            border-top: 1px solid #1e293b;
+            border-right: 1px solid #1e293b;
+            border-bottom: 1px solid #1e293b;
+            border-radius: 0 12px 12px 0;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+        }
+        .faculty-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .faculty-title i { color: #38bdf8; }
+        .faculty-desc {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .btn-detail {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .btn-detail:hover {
+            background: #38bdf8;
+            color: #030712;
+            box-shadow: 0 0 15px #38bdf8;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fa-solid fa-graduation-cap"></i> UniDream
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">หน้าแรก</a></li>
+            <li><a href="quiz.html">ทำแบบทดสอบใหม่</a></li>
+            <li><a href="all_universities.html"><i class="fa-solid fa-university"></i> มหาวิทยาลัยทั้งหมด</a></li>
+            <li>
+                <div class="google-user-pill">
+                    <div class="user-avatar-circle" id="navAvatar">U</div>
+                    <div class="user-info-text">
+                        <div class="user-fullname" id="navName">ชื่อผู้ใช้</div>
+                        <div class="user-email-sub" id="navEmail">email@example.com</div>
+                    </div>
+                    <button class="btn-logout" id="logoutBtn" title="ออกจากระบบ">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <section class="hero-section">
+        <div class="badge-tag">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> ผลการประเมินความถนัด 30 ข้อ
+        </div>
+        <h1 id="resultTitle">กำลังโหลดผลลัพธ์...</h1>
+        <p id="resultDesc">ระบบกำลังวิเคราะห์เส้นทางศึกษาต่อที่เหมาะสมกับตัวคุณ...</p>
+    </section>
+
+    <div class="container" id="resultsContainer"></div>
+
+    <script>
+        const userName = localStorage.getItem('quiz_username');
+        const userEmail = localStorage.getItem('quiz_email');
+        if (!userName || !userEmail) { 
+            window.location.href = 'index.html'; 
+        } else {
+            document.getElementById('navName').innerText = userName;
+            document.getElementById('navEmail').innerText = userEmail;
+            document.getElementById('navAvatar').innerText = userName.charAt(0).toUpperCase();
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('quiz_username');
+            localStorage.removeItem('quiz_email');
+            localStorage.removeItem('quiz_result_category');
+            window.location.href = 'index.html';
+        });
+
+        const categoryResults = {
+            0: {
+                title: "สายเทคโนโลยี นวัตกรรม และคอมพิวเตอร์",
+                desc: "คุณมีความโดดเด่นด้านการคิดวิเคราะห์ การแก้ปัญหาเชิงตรรกะ ชอบเทคโนโลยี การเขียนโปรแกรม หรือระบบอัตโนมัติ สถาบันที่ตอบโจทย์คุณ:",
+                items: [
+                    {
+                        uni: "มหาวิทยาลัยสงขลานครินทร์ (PSU - วิทยาเขตหาดใหญ่ / ภูเก็ต)",
+                        location: "สงขลา • ภูเก็ต",
+                        logo: "psu.png",
+                        faculty: "คณะวิศวกรรมศาสตร์ / คณะวิทยาศาสตร์ - สาขาวิศวกรรมคอมพิวเตอร์ เทคโนโลยีสารสนเทศ หรือ AI",
+                        detail: "หลักสูตรเข้มข้น เน้นการพัฒนาซอฟต์แวร์ ระบบเครือข่าย นวัตกรรมดิจิทัล และ AI รองรับอุตสาหกรรมเทคยุคใหม่",
+                        link: "https://www.psu.ac.th"
+                    },
+                    {
+                        uni: "มหาวิทยาลัยวลัยลักษณ์ (WU)",
+                        location: "ท่าศาลา, นครศรีธรรมราช",
+                        logo: "wu.png",
+                        faculty: "สำนักวิชาวิศวกรรมศาสตร์และเทคโนโลยี - สาขาวิศวกรรมคอมพิวเตอร์และเทคโนโลยีสารสนเทศ",
+                        detail: "โดดเด่นด้วยห้องปฏิบัติการทันสมัย การเรียนการสอนมาตรฐานสากล และโอกาสในการฝึกงานสาย Tech ชั้นนำ",
+                        link: "https://www.wu.ac.th"
+                    }
+                ]
+            },
+            1: {
+                title: "สายบริหารธุรกิจ การตลาด และการจัดการ",
+                desc: "คุณมีภาวะผู้นำ มีความสามารถในการวางแผนกลยุทธ์ การบริหารการเงิน และการเจรจาต่อรอง หลักสูตรที่เหมาะสมกับคุณ:",
+                items: [
+                    {
+                        uni: "มหาวิทยาลัยสงขลานครินทร์ (PSU - วิทยาเขตหาดใหญ่)",
+                        location: "หาดใหญ่, สงขลา",
+                        logo: "psu.png",
+                        faculty: "คณะวิทยาการจัดการ - สาขาบริหารธุรกิจ / การตลาดดิจิทัล / การเงิน",
+                        detail: "เน้นปั้นผู้ประกอบการยุคใหม่ กลยุทธ์การทำธุรกิจออนไลน์ และการบริหารจัดการองค์กรธุรกิจขนาดใหญ่ในภูมิภาค",
+                        link: "https://www.psu.ac.th"
+                    },
+                    {
+                        uni: "มหาวิทยาลัยวลัยลักษณ์ (WU)",
+                        location: "นครศรีธรรมราช",
+                        logo: "wu.png",
+                        faculty: "สำนักวิชาการจัดการ - สาขาบริหารธุรกิจและความเป็นผู้ประกอบการ",
+                        detail: "เน้นการเรียนรู้ผ่านการปฏิบัติจริง (UK Standard) เสริมสร้างทักษะการบริหารและการตลาดสากล",
+                        link: "https://www.wu.ac.th"
+                    }
+                ]
+            },
+            2: {
+                title: "สายศิลปะ การออกแบบ สื่อสร้างสรรค์ และภาษา",
+                desc: "คุณมีความคิดสร้างสรรค์ จินตนาการสูง ชอบงานดีไซน์ สื่อดิจิทัล หรือการสื่อสารวัฒนธรรม หลักสูตรที่แนะนำ:",
+                items: [
+                    {
+                        uni: "มหาวิทยาลัยสงขลานครินทร์ (PSU - วิทยาเขตปัตตานี / ภูเก็ต)",
+                        location: "ปัตตานี • ภูเก็ต",
+                        logo: "psu.png",
+                        faculty: "คณะศิลปศาสตร์ / คณะสถาปัตยกรรมศาสตร์ (หรือสาขาที่เกี่ยวข้องกับสื่อสร้างสรรค์และภาษา)",
+                        detail: "ส่งเสริมการออกแบบเชิงวัฒนธรรม การสื่อสารภาษาต่างประเทศ และศิลปะร่วมสมัย",
+                        link: "https://www.psu.ac.th"
+                    },
+                    {
+                        uni: "มหาวิทยาลัยวลัยลักษณ์ (WU)",
+                        location: "นครศรีธรรมราช",
+                        logo: "wu.png",
+                        faculty: "สำนักวิชาศิลปศาสตร์ - สาขาวิชาภาษาอังกฤษ/นิเทศศาสตร์ดิจิทัล",
+                        detail: "เน้นทักษะการสื่อสารสากล การผลิตคอนเทนต์ และการสร้างสรรค์งานศิลปะดิจิทัลร่วมสมัย",
+                        link: "https://www.wu.ac.th"
+                    }
+                ]
+            },
+            3: {
+                title: "สายสุขภาพ สังคมศาสตร์ และการช่วยเหลือผู้คน",
+                desc: "คุณมีความเห็นอกเห็นใจผู้อื่น (Empathy) สูง มีวินัย สนใจงานด้านสุขภาวะ สังคม หรือการพัฒนาคุณภาพชีวิต มหาวิทยาลัยที่แนะนำ:",
+                items: [
+                    {
+                        uni: "มหาวิทยาลัยสงขลานครินทร์ (PSU - วิทยาเขตหาดใหญ่)",
+                        location: "หาดใหญ่, สงขลา",
+                        logo: "psu.png",
+                        faculty: "คณะพยาบาลศาสตร์ / คณะเทคนิคการแพทย์ / คณะแพทยศาสตร์",
+                        detail: "ศูนย์กลางทางการแพทย์และสาธารณสุขที่ใหญ่ที่สุดในภาคใต้ พร้อมเครื่องมือและโรงพยาบาลมหาวิทยาลัยชั้นนำ",
+                        link: "https://www.psu.ac.th"
+                    },
+                    {
+                        uni: "มหาวิทยาลัยวลัยลักษณ์ (WU)",
+                        location: "นครศรีธรรมราช",
+                        logo: "wu.png",
+                        faculty: "สำนักวิชาพยาบาลศาสตร์ / สำนักวิชาสหเวชศาสตร์ / ศูนย์การแพทย์วลัยลักษณ์",
+                        detail: "มีโรงพยาบาลมหาวิทยาลัยขนาดใหญ่ทันสมัย รองรับการศึกษาด้านสุขภาพอย่างเต็มรูปแบบ",
+                        link: "https://www.wu.ac.th"
+                    }
+                ]
+            }
+        };
+
+        let bestCat = localStorage.getItem('quiz_result_category');
+        bestCat = (bestCat !== null && !isNaN(bestCat)) ? parseInt(bestCat) : 0;
+
+        const resultData = categoryResults[bestCat] || categoryResults[0];
+
+        document.getElementById('resultTitle').innerText = resultData.title;
+        document.getElementById('resultDesc').innerText = resultData.desc;
+
+        const container = document.getElementById('resultsContainer');
+        container.innerHTML = '';
+
+        resultData.items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            card.innerHTML = `
+                <div class="uni-header">
+                    <div class="uni-icon">
+                        <img src="${item.logo}" alt="Logo">
+                    </div>
+                    <div class="uni-title">
+                        <h3>${item.uni}</h3>
+                        <p><i class="fa-solid fa-location-dot"></i> ${item.location}</p>
+                    </div>
+                </div>
+                <div class="faculty-box">
+                    <div class="faculty-title">
+                        <i class="fa-solid fa-graduation-cap"></i> ${item.faculty}
+                    </div>
+                    <div class="faculty-desc">
+                        ${item.detail}
+                    </div>
+                </div>
+                <a href="${item.link}" target="_blank" class="btn-detail">
+                    <i class="fa-solid fa-globe"></i> ดูรายละเอียดหลักสูตรเพิ่มเติม
+                </a>
+            `;
+            container.appendChild(card);
+        });
+    </script>
+</body>
+</html>

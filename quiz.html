@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบค้นหาคณะในฝัน - 30 ข้อ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Prompt', sans-serif; }
+        :root { --primary: #00f2fe; --secondary: #4facfe; --bg-dark: #0f172a; }
+        body { background-color: var(--bg-dark); color: #ffffff; min-height: 100vh; padding: 20px; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto 30px auto; padding: 15px 25px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; }
+        .nav-brand { font-weight: 700; font-size: 1.2rem; color: var(--primary); }
+        .user-profile { display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.06); padding: 8px 15px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .user-avatar { width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 1.1rem; color: #0f172a; }
+        .user-info { display: flex; flex-direction: column; text-align: left; }
+        .user-name { font-size: 0.9rem; font-weight: 600; color: #ffffff; }
+        .user-email { font-size: 0.75rem; color: #94a3b8; }
+        .logout-btn { background: rgba(255, 8, 68, 0.2); border: 1px solid rgba(255, 8, 68, 0.4); color: #ff758c; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.3s; margin-left: 5px; }
+        .logout-btn:hover { background: #ff0844; color: #ffffff; }
+        
+        .quiz-container { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 40px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); }
+        .quiz-header { margin-bottom: 25px; font-size: 1.3rem; font-weight: 700; color: var(--secondary); }
+        .question-box { font-size: 1.25rem; margin-bottom: 25px; line-height: 1.6; font-weight: 600; }
+        .options-list { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
+        .option-item { padding: 16px 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; cursor: pointer; transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease; font-size: 1.05rem; user-select: none; }
+        .option-item:hover { background: rgba(79, 172, 254, 0.15); border-color: var(--secondary); transform: translateX(6px); }
+        .option-item:active, .option-item.clicked { transform: scale(0.97) translateX(0) !important; background: linear-gradient(135deg, var(--primary), var(--secondary)) !important; color: #0f172a !important; font-weight: 700; border-color: #ffffff; box-shadow: 0 0 15px rgba(0, 242, 254, 0.5); }
+        
+        /* หน้าเริ่มทำแบบทดสอบ */
+        .start-screen { text-align: center; padding: 20px 0; }
+        .start-screen h2 { font-size: 2rem; margin-bottom: 15px; color: var(--primary); }
+        .start-screen p { color: #94a3b8; font-size: 1.05rem; margin-bottom: 30px; line-height: 1.6; }
+        .btn-start { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #0f172a; border: none; padding: 14px 40px; font-size: 1.1rem; font-weight: 700; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); }
+        .btn-start:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(0, 242, 254, 0.7); }
+        
+        .hidden { display: none !important; }
+
+        @media (max-width: 768px) { .navbar { flex-direction: column; gap: 15px; text-align: center; } .user-profile { width: 100%; justify-content: center; } .user-info { text-align: center; } }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="nav-brand"><i class="fa-solid fa-graduation-cap"></i> Southern Uni Pathfinder</div>
+        <div class="user-profile">
+            <div class="user-avatar" id="userInitial">U</div>
+            <div class="user-info">
+                <span class="user-name" id="displayName">กำลังโหลด...</span>
+                <span class="user-email" id="displayEmail">loading...</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn" title="ออกจากระบบ"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+    </div>
+
+    <div class="quiz-container">
+        <!-- หน้าแรกก่อนกดเริ่ม -->
+        <div id="startScreen" class="start-screen">
+            <h2>แบบทดสอบค้นหาคณะและมหาวิทยาลัยในฝัน</h2>
+            <p>ทำแบบทดสอบ 30 ข้อเพื่อค้นหาเส้นทาง คณะ และมหาวิทยาลัยในภาคใต้ที่เหมาะกับตัวตนของคุณมากที่สุด ใช้เวลาประมาณ 5 นาที</p>
+            <button class="btn-start" id="startBtn"><i class="fa-solid fa-play"></i> เริ่มทำแบบทดสอบ</button>
+        </div>
+
+        <!-- หน้าคำถาม (ซ่อนไว้ก่อนจนกว่าจะกดเริ่ม) -->
+        <div id="quizContent" class="hidden">
+            <div class="quiz-header" id="quizProgress">คำถามข้อที่ 1 จาก 30</div>
+            <div class="question-box" id="questionText">กำลังโหลดข้อคำถาม...</div>
+            <div class="options-list" id="optionsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const userName = localStorage.getItem('quiz_username');
+        const userEmail = localStorage.getItem('quiz_email');
+        if (!userName || !userEmail) { window.location.href = 'index.html'; } 
+        else {
+            document.getElementById('displayName').innerText = userName;
+            document.getElementById('displayEmail').innerText = userEmail;
+            document.getElementById('userInitial').innerText = userName.charAt(0).toUpperCase();
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('quiz_username');
+            localStorage.removeItem('quiz_email');
+            localStorage.removeItem('quiz_result_category');
+            window.location.href = 'index.html';
+        });
+
+        const quizData = [
+            { q: "1. เมื่อมีเวลาว่าง คุณมักจะเลือกทำกิจกรรมแบบไหนมากที่สุด?", options: [{text: "อ่านหนังสือ/อัปเดตข่าวสารเทคโนโลยี", cat: 0}, {text: "ออกไปพบปะผู้คน จัดกิจกรรมอาสา", cat: 3}, {text: "วาดรูป ออกแบบ หรือทำคอนเทนต์", cat: 2}, {text: "คิดคำนวณ วางแผนการเงิน/ธุรกิจ", cat: 1}] },
+            { q: "2. วิชาไหนที่คุณรู้สึกสนุกและทำคะแนนได้ดีที่สุดในโรงเรียน?", options: [{text: "วิทยาศาสตร์ / ชีวะ / เคมี", cat: 3}, {text: "ภาษาต่างประเทศ / สังคมศึกษา", cat: 2}, {text: "ศิลปะ / ดนตรี / คอมพิวเตอร์กราฟิก", cat: 2}, {text: "คณิตศาสตร์ / บัญชี / พาณิชยกรรม", cat: 1}] },
+            { q: "3. หากต้องทำงานกลุ่ม คุณมักจะได้รับบทบาทอะไรบ่อยที่สุด?", options: [{text: "หัวหน้าทีม วางแผนและสั่งการ", cat: 1}, {text: "ผู้ลงมือทำข้อมูล เทคนิค หรือโค้ดดิ้ง", cat: 0}, {text: "ผู้นำเสนอ ออกแบบสไลด์ให้สวยงาม", cat: 2}, {text: "ผู้ประสานงาน ดูแลความเรียบร้อยและความสุข", cat: 3}] },
+            { q: "4. คุณชอบสภาพแวดล้อมการทำงานแบบไหนในอนาคต?", options: [{text: "ในห้องปฏิบัติการ (Lab) หรืออุตสาหกรรม", cat: 3}, {text: "หน้าจอคอมพิวเตอร์ ทำงานที่ไหนก็ได้ (Remote)", cat: 0}, {text: "โรงพยาบาล คลินิก หรือศูนย์สุขภาพ", cat: 3}, {text: "ห้องประชุมบริษัท ห้างร้าน หรือพื้นที่ธุรกิจ", cat: 1}] },
+            { q: "5. ปัญหาประเภทใดที่คุณรู้สึกอยากเข้าไปแก้ไขมากที่สุด?", options: [{text: "ปัญหาโรคภัยไข้เจ็บและสุขภาพของคน", cat: 3}, {text: "ปัญหาสิ่งแวดล้อม พลังงาน และธรรมชาติ", cat: 0}, {text: "ปัญหาการสื่อสาร เทคโนโลยีล้าหลัง", cat: 0}, {text: "ปัญหาเศรษฐกิจ การเงิน และการค้าขาย", cat: 1}] },
+            { q: "6. งานอดิเรกข้อใดตรงกับตัวคุณมากที่สุด?", options: [{text: "ประดิษฐ์ ซ่อมแซม หรือแกะดูระบบข้างใน", cat: 0}, {text: "อ่านนิยาย ดูหนัง วิเคราะห์พฤติกรรมมนุษย์", cat: 2}, {text: "ถ่ายภาพ ตัดต่อวิดีโอ เขียนบทความ", cat: 2}, {text: "เล่นหุ้นจำลอง ซื้อขายของออนไลน์", cat: 1}] },
+            { q: "7. คุณมีความคิดเห็นอย่างไรกับการเรียนรู้ภาษาที่สาม?", options: [{text: "อยากเรียนเพื่อใช้ทำงานกับชาวต่างชาติ/ท่องเที่ยว", cat: 2}, {text: "ไม่ค่อยจำเป็น เน้นภาษาอังกฤษให้คล่องก็พอ", cat: 1}, {text: "สนใจอยากศึกษาวัฒนธรรมเพื่อนบ้านอาเซียน", cat: 2}, {text: "ชอบมาก อยากแปลภาษาหรือสอนหนังสือ", cat: 2}] },
+            { q: "8. หากได้ไปศึกษาต่อหรือทำงานในภาคใต้ คุณชอบบรรยากาศแบบไหน?", options: [{text: "เมืองใหญ่ ทันสมัย เช่น หาดใหญ่ หรือ ภูเก็ต", cat: 1}, {text: "เมืองธรรมชาติ ติดทะเล คาเฟ่ชิคๆ เช่น ตรัง กระบี่", cat: 2}, {text: "เมืองวัฒนธรรม ประวัติศาสตร์ เช่น นครศรีธรรมราช", cat: 3}, {text: "เมืองเงียบสงบ อากาศดี วิถีชุมชน เช่น พัทลุง", cat: 3}] },
+            { q: "9. คุณคิดว่าทักษะเด่นที่สุดของตัวเองคืออะไร?", options: [{text: "คิดวิเคราะห์และแก้ปัญหาเฉพาะหน้าเก่ง", cat: 0}, {text: "มีความคิดสร้างสรรค์ จินตนาการสูง", cat: 2}, {text: "เข้าสังคมเก่ง เจรจาโน้มน้าวใจเก่ง", cat: 1}, {text: "มีความอดทน ระเบียบวินัยสูง", cat: 3}] },
+            { q: "10. คุณชอบการทำงานร่วมกับผู้คนลักษณะไหน?", options: [{text: "ทำงานคนเดียว มีสมาธิ โฟกัสชิ้นงาน", cat: 0}, {text: "ทำงานเป็นทีมเล็กๆ ระดมความคิด", cat: 2}, {text: "ทำงานกับคนหมู่มาก คอยช่วยเหลือ", cat: 3}, {text: "ทำงานกับผู้บริหารหรือนักลงทุนระดับสูง", cat: 1}] },
+            { q: "11. เมื่อเจออุปกรณ์อิเล็กทรอนิกส์พัง คุณจะทำอย่างไร?", options: [{text: "แกะซ่อมเอง ดูวิธีแก้ในยูทูป", cat: 0}, {text: "ส่งร้านซ่อมทันทีเพราะกลัวพังกว่าเดิม", cat: 1}, {text: "ปล่อยทิ้งไว้แล้วซื้อใหม่", cat: 2}, {text: "หาสาเหตุทางทฤษฎีว่าทำไมมันถึงพัง", cat: 3}] },
+            { q: "12. แนวคิดการทำธุรกิจที่คุณสนใจคืออะไร?", options: [{text: "สตาร์ทอัพเทคโนโลยี นวัตกรรมล้ำสมัย", cat: 0}, {text: "ร้านกาแฟ คาเฟ่ ท่องเที่ยวเชิงนิเวศ", cat: 2}, {text: "แบรนด์เสื้อผ้า แฟชั่น หรืออาร์ตทอย", cat: 2}, {text: "ธุรกิจนำเข้า-ส่งออก หรือโลจิสติกส์", cat: 1}] },
+            { q: "13. อาชีพในฝันช่วงวัยเด็กของคุณคืออะไร?", options: [{text: "นักวิทยาศาสตร์ / วิศวกร / หมอ", cat: 3}, {text: "ครู / นักจิตวิทยา / นักสังคมสงเคราะห์", cat: 3}, {text: "ศิลปิน / นักออกแบบ / สถาปนิก", cat: 2}, {text: "นักธุรกิจ / เจ้าของกิจการ / นักการธนาคาร", cat: 1}] },
+            { q: "14. คุณชอบอ่านหรือดูคอนเทนต์แนวไหนบนโซเชียลมีเดีย?", options: [{text: "สารคดี เทคโนโลยี อวกาศ นวัตกรรม", cat: 0}, {text: "รีวิวคาเฟ่ โรงแรม ที่เที่ยวสวยๆ ในภาคใต้", cat: 2}, {text: "ศิลปะ การแต่งห้อง แฟชั่น แอนิเมชัน", cat: 2}, {text: "การลงทุน หุ้น คริปโต ข่าวเศรษฐกิจ", cat: 1}] },
+            { q: "15. ถ้าให้เลือกเรียนภาษาโปรแกรมมิ่งหรือซอฟต์แวร์ คุณสนใจไหม?", options: [{text: "สนใจมาก อยากสร้างแอปพลิเคชันหรือเว็บ", cat: 0}, {text: "เฉยๆ ขอแค่ใช้โปรแกรมพื้นฐานเป็นก็พอ", cat: 1}, {text: "สนใจด้านกราฟิก ตัดต่อ มากกว่าโค้ด", cat: 2}, {text: "สนใจระบบฐานข้อมูลและการจัดการระบบหลังบ้าน", cat: 0}] },
+            { q: "16. คุณมีความรู้สึกอย่างไรกับตัวเลขและการคำนวณ?", options: [{text: "ชอบ ท้าทาย สนุกเวลามีสูตรยากๆ", cat: 0}, {text: "พอไหว ไม่เกลียด แต่ก็ไม่ถึงกับรัก", cat: 3}, {text: "ไม่ชอบเลย ขอเน้นทางสายศิลป์และภาษาดีกว่า", cat: 2}, {text: "ชอบการคำนวณเงิน กำไร ขาดทุน", cat: 1}] },
+            { q: "17. คุณชอบเดินทางท่องเที่ยวสไตล์ไหน?", options: [{text: "ลุยป่า ปีนเขา เดินทางศึกษาธรรมชาติ", cat: 3}, {text: "เที่ยวทะเล ดำน้ำ เกาะแก่งต่างๆ", cat: 2}, {text: "เที่ยวชมพิพิธภัณฑ์ หอศิลป์ สถาปัตยกรรม", cat: 2}, {text: "ช้อปปิ้ง คาเฟ่ฮิปๆ เมืองท่องเที่ยว", cat: 1}] },
+            { q: "18. คุณคิดว่าคุณเป็นคนมีความเห็นอกเห็นใจผู้อื่น (Empathy) มากแค่ไหน?", options: [{text: "ปานกลาง เน้นใช้เหตุผลมากกว่า", cat: 0}, {text: "สูงมาก ชอบรับฟังปัญหาและให้คำปรึกษา", cat: 3}, {text: "เฉยๆ สนใจงานที่รับผิดชอบตรงหน้ามากกว่า", cat: 1}, {text: "ชอบช่วยเหลือสังคมผ่านโครงการอาสา", cat: 3}] },
+            { q: "19. หากมหาวิทยาลัยมีกิจกรรมประกวดแข่งขัน คุณอยากลงแข่งอะไร?", options: [{text: "แข่งขันเขียนโค้ด โครงงานวิทยาศาสตร์", cat: 0}, {text: "ประกวดแผนธุรกิจ นำเสนอหน้าห้อง", cat: 1}, {text: "ประกวดวาดภาพ ออกแบบกราฟิก ถ่ายหนังสั้น", cat: 2}, {text: "ประกวดกล่าวสุนทรพจน์ โต้วาที", cat: 3}] },
+            { q: "20. คุณมีความสามารถในการจัดการความกดดันอย่างไร?", options: [{text: "นิ่ง สงบ วิเคราะห์ทางแก้ทีละเปลาะ", cat: 0}, {text: "ปรึกษาคนรอบข้าง ระบายความเครียด", cat: 3}, {text: "ฟังเพลง วาดรูป เล่นเกมเพื่อรีเซ็ตสมอง", cat: 2}, {text: "ลุยงานต่อให้เสร็จโดยเร็ว", cat: 1}] },
+            { q: "21. คุณชอบวิชาประวัติศาสตร์หรือสังคมศาสตร์ไหม?", options: [{text: "เฉยๆ เน้นวิชาชีพที่จับต้องได้มากกว่า", cat: 1}, {text: "ชอบเรียนรู้ความเป็นมา วัฒนธรรมท้องถิ่นภาคใต้", cat: 3}, {text: "ชอบวิเคราะห์กฎหมาย สิทธิมนุษยชน", cat: 3}, {text: "ชอบเรียนรู้พฤติกรรมมนุษย์และสังคม", cat: 3}] },
+            { q: "22. สไตล์การแต่งตัวหรือจัดโต๊ะทำงานของคุณเป็นแบบไหน?", options: [{text: "เรียบง่าย มินิมอล สะอาดตา", cat: 1}, {text: "มีสไตล์ สีสันสดใส มีงานศิลปะแปะ", cat: 2}, {text: "รกแต่รู้ว่าอะไรอยู่ตรงไหน เน้นใช้งาน", cat: 0}, {text: "ไฮเทค มีแกดเจ็ต จอคอมหลายจอ", cat: 0}] },
+            { q: "23. คุณคิดอย่างไรกับงานบริการและการต้อนรับผู้คน?", options: [{text: "ชอบ พูดคุยยิ้มแย้ม สร้างความประทับใจ", cat: 1}, {text: "ไม่ค่อยถนัด ชอบงานเบื้องหลังมากกว่า", cat: 0}, {text: "ชอบถ้าเป็นงานบริการลูกค้าระดับพรีเมียม", cat: 1}, {text: "เฉยๆ ทำได้ถ้าจำเป็น", cat: 3}] },
+            { q: "24. ความฝันสูงสุดในการทำงานของคุณคืออะไร?", options: [{text: "คิดค้นนวัตกรรมเปลี่ยนโลก", cat: 0}, {text: "มีอิสระทางการเงิน เป็นนายตัวเอง", cat: 1}, {text: "ช่วยเหลือสังคมให้ดีขึ้น สร้างรอยยิ้ม", cat: 3}, {text: "เป็นผู้เชี่ยวชาญเฉพาะด้านที่ใครก็แทนที่ไม่ได้", cat: 3}] },
+            { q: "25. คุณชอบดูรายการหรือซีรีส์แนวไหน?", options: [{text: "แนวสืบสวนสอบสวน หมอ กฎหมาย", cat: 3}, {text: "แนวธุรกิจ แย่งชิงอำนาจ ชิงทุน", cat: 1}, {text: "แนวแฟนตาซี ศิลปะ การเดินทาง ผจญภัย", cat: 2}, {text: "แนวชีวิตอบอุ่น สารคดีธรรมชาติ วิถีชีวิต", cat: 3}] },
+            { q: "26. ถ้าให้ทำโครงงานจบการศึกษา (Thesis) คุณอยากทำเรื่องอะไร?", options: [{text: "สร้างระบบ AI หรือหุ่นยนต์อัจฉริยะ", cat: 0}, {text: "วิเคราะห์การตลาดและพฤติกรรมผู้บริโภค", cat: 1}, {text: "ออกแบบผลิตภัณฑ์จากภูมิปัญญาท้องถิ่น", cat: 2}, {text: "ศึกษาปัญหาสุขภาพหรือจิตวิทยาวัยรุ่น", cat: 3}] },
+            { q: "27. คุณมีความมั่นใจในการพูดต่อหน้าคนจำนวนมากแค่ไหน?", options: [{text: "มั่นใจมาก เป็นพิธีกรหรือผู้นำเสนอได้ดี", cat: 1}, {text: "พอได้ แต่ถ้าเลือกได้ขอทำเบื้องหลัง", cat: 0}, {text: "ไม่ค่อยมั่นใจ ตื่นเต้นเวลามีคนมอง", cat: 2}, {text: "ชอบถ้าเป็นเรื่องที่ตัวเองถนัด", cat: 3}] },
+            { q: "28. คุณให้น้ำหนักกับเรื่อง 'เทคโนโลยีและ AI' ในอนาคตอย่างไร?", options: [{text: "สำคัญมาก ทุกอาชีพต้องปรับตัวใช้ AI", cat: 0}, {text: "เป็นเครื่องมือช่วยทำงานเฉยๆ", cat: 1}, {text: "กลัว AI จะมาแย่งงานศิลปะและความคิดสร้างสรรค์", cat: 2}, {text: "สนใจอยากเรียนรู้ลึกถึงวิธีสร้างและควบคุม", cat: 0}] },
+            { q: "29. หากได้ทุนเรียนต่อต่างประเทศหรือศึกษาดูงาน คุณอยากไปด้านไหน?", options: [{text: "ศึกษาเทคโนโลยีล้ำสมัย ซิลิคอนวัลเลย์", cat: 0}, {text: "ศึกษาด้านสถาปัตยกรรมและศิลปะยุโรป", cat: 2}, {text: "ศึกษาการบริหารธุรกิจและเศรษฐกิจระดับโลก", cat: 1}, {text: "ศึกษาด้านการแพทย์และสาธารณสุขระดับสากล", cat: 3}] },
+            { q: "30. สรุปตัวตนของคุณใน 1 ประโยค คุณคิดว่าตัวเองคือใคร?", options: [{text: "นักพัฒนาผู้ขับเคลื่อนอนาคตด้วยเทคโนโลยี", cat: 0}, {text: "ผู้นำและนักธุรกิจผู้สร้างความเติบโต", cat: 1}, {text: "ศิลปิน นักออกแบบ ผู้เติมแต่งความสวยงาม", cat: 2}, {text: "ผู้เยียวยาและผู้สร้างสรรค์สังคมให้น่าอยู่", cat: 3}] }
+        ];
+
+        let currentQuestion = 0;
+        let scores = [0, 0, 0, 0]; 
+
+        const startScreen = document.getElementById('startScreen');
+        const quizContent = document.getElementById('quizContent');
+        const startBtn = document.getElementById('startBtn');
+        const progressEl = document.getElementById('quizProgress');
+        const questionTextEl = document.getElementById('questionText');
+        const optionsContainerEl = document.getElementById('optionsContainer');
+
+        startBtn.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            quizContent.classList.remove('hidden');
+            loadQuestion();
+        });
+
+        function loadQuestion() {
+            if (currentQuestion >= quizData.length) {
+                let maxScore = Math.max(...scores);
+                let bestCategory = scores.indexOf(maxScore);
+                localStorage.setItem('quiz_result_category', bestCategory);
+
+                // --- อัปเดตลิงก์เว็บแอปใหม่เรียบร้อยแล้ว ---
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbwcDyDTLTdZvc1TdkBHwCcQKb0hzedrmTOxXTDmG5wovslYfbJfQKvN7l9k3CQ4MV-8/exec?action=increment';
+
+                // ใช้ sendBeacon ยิงไปที่ Google Sheet แบบเบื้องหลัง
+                navigator.sendBeacon(scriptURL);
+
+                window.location.href = "result.html"; 
+                return;
+            }
+
+            const qData = quizData[currentQuestion];
+            progressEl.innerText = `คำถามข้อที่ ${currentQuestion + 1} จาก ${quizData.length}`;
+            questionTextEl.innerText = qData.q;
+            
+            optionsContainerEl.innerHTML = "";
+            qData.options.forEach((opt) => {
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                div.innerText = opt.text;
+                
+                div.addEventListener('click', () => {
+                    scores[opt.cat]++; 
+                    div.classList.add('clicked');
+                    
+                    setTimeout(() => {
+                        currentQuestion++;
+                        loadQuestion();
+                    }, 120); 
+                });
+
+                optionsContainerEl.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
